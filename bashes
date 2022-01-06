@@ -1,0 +1,5 @@
+```
+nest g resource cats
+
+nest g controller cats
+```

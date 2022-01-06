@@ -1,8 +1,15 @@
-import { Controller, Get, Res, Req } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query } from '@nestjs/common';
 import { request, Request } from 'express';
+import { Observable, of } from 'rxjs';
 
 @Controller('cats')
 export class CatsController {
+    val: Array<number> = [];
+    constructor() {
+        setInterval(() => {
+            this.val.push(Math.random() * 10)
+        }, 1000)
+    }
     @Get()
     findAll(@Req() request: Request): string {
         return 'This action returns all cats';
@@ -14,5 +21,25 @@ export class CatsController {
     @Get('ab*cd')
     findAllRoute(@Req() request: Request): object {
         return request.params
+    }
+    @Get("a")
+    @Header('Cache-Control', 'none')
+    findAllWithHeader(): string {
+        return "Header is setting"
+    }
+    @Get('docs')
+    @Redirect('https://docs.nestjs.com', 302)
+    getDocs(@Query('version') version) {
+        if (version && version === '5') {
+            return { url: 'https://docs.nestjs.com/v5/' };
+        }
+    }
+    @Get("promise")
+    async findAllPromise(): Promise<any[]> {
+      return [];
+    }
+    @Get('observable')
+    findAllObservable(): Observable<any[]> {
+        return of(this.val);
     }
 }
