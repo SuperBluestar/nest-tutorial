@@ -1,11 +1,14 @@
-import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body } from '@nestjs/common';
 import { request, Request } from 'express';
 import { Observable, of } from 'rxjs';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
     val: Array<number> = [];
-    constructor() {
+    constructor(private catsService: CatsService) {
         setInterval(() => {
             this.val.push(Math.random() * 10)
         }, 1000)
@@ -54,4 +57,15 @@ export class CatsController {
     findById(@Param() params): string {
         return params
     }
+
+    @Post()
+    async create(@Body() createCatDto: CreateCatDto) {
+        this.catsService.create(createCatDto);
+    }
+
+    @Get("/allcats")
+    async findAllCats(): Promise<Cat[]> {
+        return this.catsService.findAll();
+    }
+
 }
