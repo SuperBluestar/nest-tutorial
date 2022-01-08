@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Req, Header, Redirect, Query } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param } from '@nestjs/common';
 import { request, Request } from 'express';
 import { Observable, of } from 'rxjs';
 
@@ -41,5 +41,17 @@ export class CatsController {
     @Get('observable')
     findAllObservable(): Observable<any[]> {
         return of(this.val);
+    }
+
+    @Get('test-request')
+    findAllRequest(@Ip() ip, @Session() session, @HostParam() hosts): string {
+        console.log(ip)
+        console.log(session)
+        console.log(hosts)
+        return ip;
+    }
+    @Get("test-param-:id-:also")
+    findById(@Param() params): string {
+        return params
     }
 }
