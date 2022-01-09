@@ -1,9 +1,11 @@
-import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
 import { request, Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
+import { HttpExceptionFilter } from '../http-exception.filter';
+import { ForbiddenException } from '../forbidden.exception';
 
 @Controller('cats')
 export class CatsController {
@@ -68,4 +70,14 @@ export class CatsController {
         return this.catsService.findAll();
     }
 
+    @Get("/catserror")
+    async findError() {
+        throw new HttpException('This is a custom message', HttpStatus.FORBIDDEN);
+    }
+
+    @Post("/exceptionfilter")
+    @UseFilters(new HttpExceptionFilter())
+    async createExceptionFilter(@Body() createCatDto: CreateCatDto) {
+        throw new HttpException('This is a custom message', HttpStatus.BAD_GATEWAY);
+    }
 }
