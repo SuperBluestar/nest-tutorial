@@ -1,11 +1,12 @@
-import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body, HttpException, HttpStatus, UseFilters, ParseIntPipe, ParseBoolPipe, UsePipes } from '@nestjs/common';
 import { request, Request } from 'express';
 import { Observable, of } from 'rxjs';
-import { CreateCatDto } from './dto/create-cat.dto';
+import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { ForbiddenException } from '../forbidden.exception';
+import { JoiValidationPipe } from '../validation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -56,11 +57,12 @@ export class CatsController {
         return ip;
     }
     @Get("test-param-:id-:also")
-    findById(@Param() params): string {
-        return params
+    findById(@Param('id', ParseIntPipe) id: number, @Param('also', ParseBoolPipe) also: boolean): object {
+        return {id: id, also: also}
     }
 
     @Post()
+    @UsePipes(new JoiValidationPipe(createCatSchema))
     async create(@Body() createCatDto: CreateCatDto) {
         this.catsService.create(createCatDto);
     }
