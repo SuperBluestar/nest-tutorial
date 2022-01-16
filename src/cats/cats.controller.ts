@@ -1,4 +1,4 @@
-import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body, HttpException, HttpStatus, UseFilters, ParseIntPipe, ParseBoolPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, Res, Req, Header, Redirect, Query, Ip, Session, HostParam, Param, Post, Body, HttpException, HttpStatus, UseFilters, ParseIntPipe, ParseBoolPipe, UsePipes, UseGuards } from '@nestjs/common';
 import { request, Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
@@ -7,8 +7,10 @@ import { Cat } from './interfaces/cat.interface';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { ForbiddenException } from '../forbidden.exception';
 import { JoiValidationPipe } from '../validation.pipe';
+import { RolesGuard } from '../roles.guard';
 
 @Controller('cats')
+@UseGuards(RolesGuard)
 export class CatsController {
     val: Array<number> = [];
     constructor(private catsService: CatsService) {
